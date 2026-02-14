@@ -10,7 +10,7 @@
 Clone the repository and navigate to the project root:
 
 ```bash
-cd Mallow_Billing
+cd mallow_billing_system
 ```
 
 Create and activate a virtual environment:
