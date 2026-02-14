@@ -1,0 +1,101 @@
+{% extends 'billing/base.html' %}
+
+{% block content %}
+<a href="{% url 'history' %}" class="btn btn-secondary history-link mt-5">View History</a>
+<h1>Billing Page</h1>
+
+<form method="POST" action="{% url 'generate_bill' %}">
+    {% csrf_token %}
+
+    <div class="form-group">
+        <label for="email">Customer Email</label>
+        <input type="email" id="email" name="email" required placeholder="customer@example.com">
+    </div>
+
+    <div class="section-title">Bill Section <button type="button" class="btn btn-success"
+            style="float: right; padding: 5px 15px; font-size: 14px;" onclick="addRow()">Add New</button></div>
+
+    <div id="product-rows">
+        <div class="dynamic-row">
+            <input type="text" name="product_id" placeholder="Product ID" required list="product-list">
+            <input type="number" name="quantity" placeholder="Quantity" required min="1">
+            <button type="button" class="btn btn-danger" onclick="removeRow(this)"
+                style="padding: 10px 15px;">X</button>
+        </div>
+        <div class="dynamic-row">
+            <input type="text" name="product_id" placeholder="Product ID" required list="product-list">
+            <input type="number" name="quantity" placeholder="Quantity" required min="1">
+            <button type="button" class="btn btn-danger" onclick="removeRow(this)"
+                style="padding: 10px 15px;">X</button>
+        </div>
+        <div class="dynamic-row">
+            <input type="text" name="product_id" placeholder="Product ID" required list="product-list">
+            <input type="number" name="quantity" placeholder="Quantity" required min="1">
+            <button type="button" class="btn btn-danger" onclick="removeRow(this)"
+                style="padding: 10px 15px;">X</button>
+        </div>
+    </div>
+
+    <datalist id="product-list">
+        {% for product in products %}
+        <option value="{{ product.product_id }}">{{ product.product_id }} - {{ product.name }} (Stock:
+            {{product.available_stocks }})</option>
+        {% endfor %}
+    </datalist>
+
+    <hr style="margin: 40px 0; border: 0; border-top: 2px solid #eee;">
+
+    <div style="display: flex; gap: 40px;">
+        <div style="flex: 1;">
+            <div class="section-title">Denominations (Available in Shop)</div>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                {% for denom in denominations %}
+                <div class="denom-item">
+                    <label>{{ denom }}</label>
+                    <input type="number" name="denom_{{ denom }}" placeholder="Count" min="0">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end;">
+            <div class="form-group">
+                <label for="cash_paid" style="font-size: 1.2em;">Cash paid by customer</label>
+                <input type="number" id="cash_paid" name="cash_paid" step="0.01" required placeholder="Amount"
+                    style="padding: 15px; font-size: 1.2em;">
+            </div>
+
+            <div style="text-align: right; margin-top: 20px;">
+                <button type="reset" class="btn btn-danger" style="margin-right: 10px;">Cancel</button>
+                <button type="submit" class="btn btn-success" style="font-size: 1.2em; padding: 12px 30px;">Generate
+                    Bill</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    function addRow() {
+        const container = document.getElementById('product-rows');
+        const row = document.createElement('div');
+        row.className = 'dynamic-row';
+        row.innerHTML = `
+            <input type="text" name="product_id" placeholder="Product ID" required list="product-list">
+            <input type="number" name="quantity" placeholder="Quantity" required min="1">
+            <button type="button" class="btn btn-danger" onclick="removeRow(this)" style="padding: 10px 15px;">X</button>
+        `;
+        container.appendChild(row);
+    }
+
+    function removeRow(btn) {
+        const rows = document.querySelectorAll('.dynamic-row');
+        if (rows.length > 1) {
+            btn.parentElement.remove();
+        } else {
+            // Clear inputs instead of removing last row
+            const inputs = btn.parentElement.querySelectorAll('input');
+            inputs.forEach(input => input.value = '');
+        }
+    }
+</script>
+{% endblock %}

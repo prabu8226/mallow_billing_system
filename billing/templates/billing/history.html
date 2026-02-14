@@ -1,0 +1,34 @@
+{% extends 'billing/base.html' %}
+
+{% block content %}
+<h2>Purchase History</h2>
+<a href="{% url 'index' %}" class="btn btn-primary" style="float: right;">New Bill</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>Bill ID</th>
+            <th>Email</th>
+            <th>Date</th>
+            <th>Total Amount</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for bill in bills %}
+        <tr>
+            <td>{{ bill.id }}</td>
+            <td>{{ bill.customer_email }}</td>
+            <td>{{ bill.created_at|date:"Y-m-d H:i" }}</td>
+            <td>{{ bill.net_price|floatformat:2 }}</td>
+            <td><a href="{% url 'bill_detail' bill.id %}" class="btn btn-secondary"
+                    style="padding: 5px 10px; font-size: 0.9em;">View Details</a></td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No history found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

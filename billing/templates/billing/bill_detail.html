@@ -1,0 +1,58 @@
+{% extends 'billing/base.html' %}
+
+{% block content %}
+<a href="{% url 'history' %}" class="btn btn-secondary history-link">Back to History</a>
+<h2>Bill #{{ bill.id }} Details</h2>
+
+<div class="row">
+    <div style="margin-bottom: 20px;">
+        <strong>Customer Email:</strong> {{ bill.customer_email }}<br>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Unit Price</th>
+                <th>Quantity</th>
+                <th>Purchase Price</th>
+                <th>Tax %</th>
+                <th>Tax payable</th>
+                <th>Total price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.product.product_id }}</td>
+                <td>{{ item.unit_price|floatformat:2 }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.base_price|floatformat:2 }}</td>
+                <td>{{ item.tax_percentage }}%</td>
+                <td>{{ item.tax_amount|floatformat:2 }}</td>
+                <td>{{ item.total_price|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="totals" style="text-align: right; width: 50%; float: right;">
+        <p>Total price without tax: <strong>{{ bill.total_amount_without_tax|floatformat:2 }}</strong></p>
+        <p>Total tax payable: <strong>{{ bill.total_tax_payable|floatformat:2 }}</strong></p>
+        <p>Net price of the purchased item: <strong>{{ bill.net_price|floatformat:2 }}</strong></p>
+        <p>Rounded down net price purchased items net price: <strong>{{ rounded_net_price|floatformat:2 }}</strong></p>
+        <p>Balance payable to the customer: <strong>{{ bill.balance_amount|floatformat:2 }}</strong></p>
+    </div>
+
+    <div style="clear: both; margin-top: 40px;">
+        <h3>Balance Denomination:</h3>
+        <ul style="list-style: none; padding: 0;">
+            {% for denom, count in breakdown.items %}
+            <li style="font-size: 1.1em;">{{ denom }} : {{ count }}</li>
+            {% empty %}
+            <li>No change breakdown recorded.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
